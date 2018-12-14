@@ -1,56 +1,59 @@
 #include "RNA.h"
+#include"DNA.h"
+#include"Sequence.h"
 
 RNA::RNA()
 {
 }
-RNA::RNA(char * seq, RNA_Type type)
+RNA::RNA(char * seq, RNA_Type atype)
 {
-	type = type;
-	if ((type ==0) || (type ==1) || (type == 2) || (type == 3))
-		cout << " RNA_Type is True" << endl;
-//mRNA, pre_mRNA, mRNA_exon, mRNA_intron
-		switch(type){
-		 case mRNA:
-		     cout<<"mRNA "<<endl;
-             break;
-
-		 case pre_mRNA:
-		     cout<<"pre_mRNA "<<endl;
-             break;
-
-		 case mRNA_exon:
-		     cout<<"mRNA_exon "<<endl;
-             break;
-
-		 case mRNA_intron:
-		     cout<<"mRNA_intron "<<endl;
-             break;
-
-
-		}
-
-
-
 	for (int i = 0; i < sizeof(seq); i++)
 	{
-		if ((seq[i] == 'A') || (seq[i] == 'C') || (seq[i] == 'G') || (seq[i] == 'U')||(seq[i] == 'a') ||(seq[i] == 'c') ||(seq[i] == 'g') ||(seq[i] == 'u'))
-			x++;
-		else
+		if ((seq[i] == 'A') || (seq[i] == 'C') || (seq[i] == 'G') || (seq[i] == 'U'))
+			  x++;
+		else if ((seq[i] == 'Q') || (seq[i] == 'W') || (seq[i] == 'E') || (seq[i] == 'R') || (seq[i] == 'Y') || (seq[i] == 'T') || (seq[i] == 'I') || (seq[i] == 'O') || (seq[i] == 'P') || (seq[i] == 'S') || (seq[i] == 'D') ||
+			(seq[i] == 'F') || (seq[i] == 'H') || (seq[i] == 'J') || (seq[i] == 'K') || (seq[i] == 'L') || (seq[i] == 'Z') || (seq[i] == 'X') || (seq[i] == 'V') || (seq[i] == 'B') || (seq[i] == 'N') || (seq[i] == 'M'))
 		{
-			cout << "invaid" << endl;
-			break;
+			 ++y;
 		}
 	}
-	if (x == sizeof(seq))
-		cout << "RNA is True" << endl;
+	if (y == 0) {
+		cout << "RNA is True " << endl;
+	}
+	else
+		cout << "RNA is Wrong" << endl;
 
 }
-//DNA RNA::ConvertToDNA(){}
-Codon codons;
-Protein RNA::ConvertToProtein( CodonsTable & table)
-{
-Protein ProteinObj;
 
+void RNA::ConvertToDNA()
+{
+	for (int i = 0; i <strlen(seq); i++)
+	{
+		if (seq[i] == 'U')
+			seq[i] = 'T';
+	}
+	/*
+	for (int i = 0; i < strlen(seq); i++)
+	{
+		cout<<seq[i];
+	}*/
+	cout << endl;
+	//DNA obj;
+	//obj.setseq(seq);
+	//return obj;
+}
+RNA::RNA(RNA& rhs)
+{
+	for (int i = 0; i < strlen(seq); i++)
+	{
+		seq[i] = rhs.seq[i];
+    }
+}
+Codon codons;
+Protein ProteinObj;
+Protein& RNA::ConvertToProtein(CodonsTable  table)
+{
+ table.LoadCodonsFromFile("RNA_codon_table.txt");
 ProteinObj.seq = new char [sizeof(seq)/3];
 char* value = new char [3];
 
@@ -69,11 +72,47 @@ int CounterForValue = 0;
 return ProteinObj;
 
 }
-void Print()
+void RNA::Print()
 {
-    for(int i = 0 ; i < sizeof(seq) ; i ++){
-    cout<<seq[i];
-}}
+	for (int i = 0; i < strlen(seq); i++)
+	{
+		if (seq[i] == 'T' || seq[i] == 'A' || seq[i] == 'C' || seq[i] == 'G' || seq[i] == 'U')
+			cout << seq[i];
+		else
+			break;
+	}
+	cout<<endl;
+}
+
 RNA::~RNA()
 {
+}
+
+istream& operator>> (istream& in, RNA&x)
+{
+	int len;
+	string type;
+	cout << "Enter your length: " << endl;
+	cin >> len;
+	x.setsize(len);
+	x.seq = new char[len + 1];
+	cout << "Enter the Sequence:" << endl;
+	for (int i = 0; i < len; i++)
+	{
+		in >> x.seq[i];
+	}
+	cout << "Enter RNA_Type: "; cin >> type;
+	if (type == "mRNA")
+		RNA(x.seq, mRNA);
+	else if (type == "pre_mRNA")
+		RNA(x.seq, pre_mRNA);
+	else if (type == "mRNA_exon")
+		RNA(x.seq, mRNA_exon);
+	else if (type == "mRNA_intron")
+		RNA(x.seq, mRNA_intron);
+	else
+		cout << "Error-----RNA_type" << endl;
+
+
+	return in;
 }
